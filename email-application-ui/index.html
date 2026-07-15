@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Application Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="container">
+        <div class="glass-card">
+            <div class="header">
+                <h1>Log Application</h1>
+                <p>Track your latest job applications instantly.</p>
+            </div>
+
+            <form id="recordForm">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="recruiter@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="type">Role Type</label>
+                    <select id="type" name="type" required>
+                        <option value="D">D</option>
+                        <option value="C">C</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="input-group hidden" id="customTypeGroup">
+                    <label for="customType">Custom Role Type</label>
+                    <input type="text" id="customType" name="customType" placeholder="Machine Learning Engineer">
+                </div>
+
+                <div class="input-group">
+                    <label for="date">Date Applied (DD-MM-YY)</label>
+                    <input type="text" id="date" name="date" placeholder="15-07-26" pattern="\d{2}-\d{2}-\d{2}" title="Must be DD-MM-YY format" required>
+                </div>
+
+
+
+                <button type="submit" id="submitBtn">
+                    <span class="btn-text">Store Record</span>
+                    <div class="loader" id="btnLoader"></div>
+                </button>
+            </form>
+
+            <div id="statusMessage" class="status-message hidden"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
