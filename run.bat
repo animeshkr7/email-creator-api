@@ -1,0 +1,6 @@
+@echo off
+echo Starting FastAPI Backend...
+start cmd /k "cd C:\Users\aks\Documents\Github\career\email_ceator && uvicorn main:app --reload"
+
+echo Opening UI in browser...
+start "" "C:\Users\aks\Documents\Github\career\email_ceator\email-application-ui\index.html"

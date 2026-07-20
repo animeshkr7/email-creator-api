@@ -21,6 +21,17 @@
             </div>
 
             <form id="recordForm">
+                <div class="button-group" style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+                    <button type="submit" id="submitBtn" style="flex: 1; margin: 0;">
+                        <span class="btn-text">Store Record</span>
+                        <div class="loader" id="btnLoader"></div>
+                    </button>
+                    <button type="button" id="draftBtn" style="flex: 1; margin: 0; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                        <span class="btn-text">Draft Email</span>
+                        <div class="loader" id="draftBtnLoader"></div>
+                    </button>
+                </div>
+
                 <div class="input-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="recruiter@example.com" required>
@@ -45,12 +56,6 @@
                     <input type="text" id="date" name="date" placeholder="15-07-26" pattern="\d{2}-\d{2}-\d{2}" title="Must be DD-MM-YY format" required>
                 </div>
 
-
-
-                <button type="submit" id="submitBtn">
-                    <span class="btn-text">Store Record</span>
-                    <div class="loader" id="btnLoader"></div>
-                </button>
             </form>
 
             <div id="statusMessage" class="status-message hidden"></div>
