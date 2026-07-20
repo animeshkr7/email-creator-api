@@ -52,13 +52,14 @@ async def store_record(record: JobRecord):
     API 1: Takes JSON data (email, type, date in DD-MM-YY format) and stores it in Supabase.
     """
     try:
-        data, count = supabase.table('job_records').insert({
+        response = supabase.table('job_records').insert({
             "email": record.email,
             "type": record.type,
             "date": record.date
         }).execute()
         
-        return {"message": "Record stored successfully", "data": data[1]}
+        inserted_data = response.data
+        return {"message": "Record stored successfully", "data": inserted_data[0] if inserted_data else {}}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
