@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const baseUrl = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || window.location.protocol === 'file:' 
         ? 'http://127.0.0.1:8000' 
-        : 'https://email-creator-api-1.onrender.com';
+        : 'https://email-creator-api.onrender.com';
 
     // Automatically fill today's date in DD-MM-YY format for convenience
     const dateInput = document.getElementById('date');
