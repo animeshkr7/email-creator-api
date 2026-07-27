@@ -46,6 +46,12 @@ class JobRecord(BaseModel):
             raise ValueError("Date must be in DD-MM-YY format")
 
 
+class CareerLinkRequest(BaseModel):
+    url: str
+    date: str | None = None  # Format: DD-MM-YY (defaults to current date if omitted)
+    status: str | None = "Pending"
+
+
 @app.post("/store_record")
 async def store_record(record: JobRecord):
     """
@@ -64,18 +70,47 @@ async def store_record(record: JobRecord):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/fetch_by_date")
-async def fetch_by_date(date: str):
+@app.post("/link")
+async def save_career_link(record: CareerLinkRequest):
     """
-    API 2: Takes a date argument (DD-MM-YY) and fetches all matching records.
-    Example: /fetch_by_date?date=15-07-26
+    API 1b: Takes a career page job link and stores it with current date in Supabase (job_url table).
+    """
+    try:
+        save_date = record.date.strip() if record.date and record.date.strip() else datetime.now().strftime("%d-%m-%y")
+        datetime.strptime(save_date, "%d-%m-%y")
+        status = record.status if record.status else "Pending"
+
+        response = supabase.table('job_url').insert({
+            "url": record.url,
+            "date": save_date,
+            "status": status
+        }).execute()
+
+        inserted_data = response.data
+        return {
+            "message": "Career page job link saved successfully",
+            "saved_date": save_date,
+            "data": inserted_data[0] if inserted_data else {}
+        }
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Must be DD-MM-YY")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/fetch_by_date")
+async def fetch_by_date(date: str, table: str = "job_records"):
+    """
+    API 2: Takes a date argument (DD-MM-YY) and fetches all matching records from specified table.
+    Example: /fetch_by_date?date=15-07-26&table=job_url
     """
     try:
         # Validate the date format first
         datetime.strptime(date, "%d-%m-%y")
+        target_table = "job_url" if table.lower() == "job_url" else "job_records"
         
         # Query Supabase for matching records
-        response = supabase.table('job_records').select("*").eq("date", date).execute()
+        response = supabase.table(target_table).select("*").eq("date", date).execute()
         
         records = response.data
         if not records:
@@ -87,6 +122,20 @@ async def fetch_by_date(date: str):
         raise HTTPException(status_code=400, detail="Invalid date format. Must be DD-MM-YY")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/delete_record/{record_id}")
+async def delete_record(record_id: int, table: str = "job_url"):
+    """
+    API 2b: Delete a record by ID from specified table.
+    """
+    try:
+        target_table = "job_records" if table.lower() == "job_records" else "job_url"
+        response = supabase.table(target_table).delete().eq("id", record_id).execute()
+        return {"message": "Record deleted successfully", "data": response.data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 class DraftRequest(BaseModel):
     email: str
@@ -120,3 +169,4 @@ async def draft_email(req: DraftRequest):
             raise HTTPException(status_code=500, detail="Failed to create Gmail draft")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
