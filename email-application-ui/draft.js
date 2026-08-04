@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Filter out generic email domains and location keywords
                 const blockedDomains = ['@gmail.com', '@programming.com', '@hotmail.com', '@outlook.com', '@protonmail.com'];
-                const blockedKeywords = [/lahore/i, /pakistan/i];
+                const blockedKeywords = [/lahore/i, /pakistan/i, /riyadh/i, /rawalpindi/i, /indore/i, /gujrat/i];
 
                 records = records.filter(record => {
                     // Check text for blocked keywords
