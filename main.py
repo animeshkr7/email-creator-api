@@ -137,6 +137,27 @@ async def delete_record(record_id: int, table: str = "job_url"):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/fetch_scraped_posts")
+async def fetch_scraped_posts(date: str):
+    """
+    API 3: Takes a date argument (DD-MM-YY) and fetches scraped LinkedIn posts.
+    """
+    try:
+        datetime.strptime(date, "%d-%m-%y")
+        response = supabase.table('scraped_posts').select("*").eq("date", date).execute()
+        
+        records = response.data
+        if not records:
+            return {"message": "No scraped posts found for this date", "data": []}
+            
+        return {"message": f"Found {len(records)} scraped posts", "data": records}
+        
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Must be DD-MM-YY")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 class DraftRequest(BaseModel):
     email: str
 
