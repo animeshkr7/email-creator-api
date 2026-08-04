@@ -95,9 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     records = records.filter(r => r.slot === selectedSlot);
                 }
 
-                // Filter out generic email domains
+                // Filter out generic email domains and location keywords
                 const blockedDomains = ['@gmail.com', '@programming.com', '@hotmail.com', '@outlook.com', '@protonmail.com'];
+                const blockedKeywords = [/lahore/i, /pakistan/i];
+
                 records = records.filter(record => {
+                    // Check text for blocked keywords
+                    if (record.text && blockedKeywords.some(regex => regex.test(record.text))) {
+                        return false;
+                    }
+
                     let emails = parseEmails(record.emails);
                     if (emails.length === 0) return true;
                     // Keep record only if it doesn't contain a blocked email
