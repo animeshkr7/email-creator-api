@@ -94,6 +94,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (selectedSlot !== 'All') {
                     records = records.filter(r => r.slot === selectedSlot);
                 }
+
+                // Filter out generic email domains
+                const blockedDomains = ['@gmail.com', '@programming.com', '@hotmail.com', '@outlook.com', '@protonmail.com'];
+                records = records.filter(record => {
+                    let emails = parseEmails(record.emails);
+                    if (emails.length === 0) return true;
+                    // Keep record only if it doesn't contain a blocked email
+                    const hasBlockedEmail = emails.some(email => {
+                        const lowerEmail = email.toLowerCase();
+                        return blockedDomains.some(domain => lowerEmail.endsWith(domain));
+                    });
+                    return !hasBlockedEmail;
+                });
+
+                // Clean trailing hashtags from text
+                records.forEach(record => {
+                    if (record.text) {
+                        // Removes blocks of hashtags at the end of the text
+                        record.text = record.text.replace(/(?:\s*#[a-zA-Z0-9_]+)+\s*$/g, '').trim();
+                        // Also remove any remaining hashtags globally just in case it's heavily spammed (optional, but requested to clean "before showing or any other hastags at bottom")
+                        // The user specifically asked to clean "any other hastags at bottom", so the regex above handles trailing ones perfectly.
+                    }
+                });
                 
                 currentRecords = records;
                 currentSwipeIndex = 0;
