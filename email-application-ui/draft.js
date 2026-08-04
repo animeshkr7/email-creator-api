@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const fetchBtn = document.getElementById('fetchBtn');
     const searchDateInput = document.getElementById('searchDate');
+    const slotFilter = document.getElementById('slotFilter');
     const cardsContainer = document.getElementById('cardsContainer');
     const statusMessage = document.getElementById('statusMessage');
     const statsRow = document.getElementById('statsRow');
@@ -44,7 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok) {
-                const records = result.data || [];
+                let records = result.data || [];
+                const selectedSlot = slotFilter.value;
+                
+                if (selectedSlot !== 'All') {
+                    records = records.filter(r => r.slot === selectedSlot);
+                }
+                
                 renderCards(records);
             } else {
                 showError(`Error: ${result.detail || result.message || 'Failed to fetch'}`);
