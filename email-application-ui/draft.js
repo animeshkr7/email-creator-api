@@ -78,11 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'job-card';
             
-            // Limit text to 300 chars for preview
+            // Use full text
             let previewText = record.text || '';
-            if (previewText.length > 300) {
-                previewText = previewText.substring(0, 300) + '...';
-            }
 
             // Emails might be stored as an array or string
             let emails = [];
