@@ -112,16 +112,16 @@
             <div class="controls">
                 <div class="input-group">
                     <label for="searchDate">Select Date & Slot</label>
-                    <div class="search-row" style="display: flex; gap: 10px;">
-                        <input type="text" id="searchDate" placeholder="15-07-26" pattern="\d{2}-\d{2}-\d{2}" style="flex: 1;">
-                        <select id="slotFilter" style="padding: 10px; border-radius: 8px; border: 1px solid var(--input-border); background: rgba(0,0,0,0.2); color: var(--text-primary); outline: none;">
+                    <div class="search-row" style="display: flex; gap: 10px; align-items: stretch;">
+                        <input type="text" id="searchDate" placeholder="15-07-26" pattern="\d{2}-\d{2}-\d{2}" style="flex: 0 0 130px; min-width: 130px;">
+                        <select id="slotFilter" style="flex: 1; padding: 10px 16px; border-radius: 12px; border: 1px solid var(--card-border); background: rgba(15, 23, 42, 0.6); color: var(--text-primary); outline: none;">
                             <option value="All">All Slots</option>
                             <option value="Morning">Morning (00:00 - 10:00)</option>
                             <option value="Noon">Noon (10:00 - 13:00)</option>
                             <option value="Evening">Evening (13:00 - 16:00)</option>
                             <option value="Night">Night (16:00 - 23:59)</option>
                         </select>
-                        <button id="fetchBtn" style="width: auto; white-space: nowrap; padding: 0 20px;">
+                        <button id="fetchBtn" style="flex: 0 0 auto; white-space: nowrap; padding: 0 20px;">
                             <span class="btn-text">Fetch Posts</span>
                             <div class="loader" id="btnLoader"></div>
                         </button>
