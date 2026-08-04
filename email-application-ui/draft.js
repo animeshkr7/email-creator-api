@@ -164,12 +164,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok) {
-                alert(`Success! Draft created for ${email}. Check your Gmail Drafts.`);
+                btn.innerHTML = '<span>✅ Drafted</span>';
+                btn.style.backgroundColor = 'var(--success)';
+                btn.style.color = '#fff';
             } else {
-                alert(`Error: ${result.detail || result.message || 'Failed to create draft'}`);
+                btn.innerHTML = '<span>❌ Failed</span>';
+                btn.style.backgroundColor = 'var(--error)';
+                btn.style.color = '#fff';
+                console.error(`Error: ${result.detail || result.message || 'Failed to create draft'}`);
+                setTimeout(() => {
+                    btn.innerHTML = '<span class="btn-text">Draft</span>';
+                    btn.style.backgroundColor = '';
+                    btn.style.color = '';
+                }, 3000);
             }
         } catch (error) {
-            alert(`Network Error: Make sure your backend API is live. (${error.message})`);
+            btn.innerHTML = '<span>❌ Error</span>';
+            btn.style.backgroundColor = 'var(--error)';
+            btn.style.color = '#fff';
+            console.error(`Network Error: Make sure your backend API is live. (${error.message})`);
+            setTimeout(() => {
+                btn.innerHTML = '<span class="btn-text">Draft</span>';
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            }, 3000);
         } finally {
             btn.classList.remove('loading');
             btn.disabled = false;
