@@ -141,15 +141,61 @@ async def delete_record(record_id: int, table: str = "job_url"):
 async def fetch_scraped_posts(date: str):
     """
     API 3: Takes a date argument (DD-MM-YY) and fetches scraped LinkedIn posts.
+    If DATA=local in .env, it fetches from the local output directory.
+    Otherwise, it fetches from Supabase.
+    It dynamically filters out unwanted posts using filter_utils.py.
     """
     try:
-        datetime.strptime(date, "%d-%m-%y")
-        response = supabase.table('scraped_posts').select("*").eq("date", date).execute()
+        dt = datetime.strptime(date, "%d-%m-%y")
+        data_source = os.getenv("DATA", "cloud").lower()
+        records = []
         
-        records = response.data
+        if data_source == "local":
+            import glob
+            import json
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            output_dir = os.path.join(base_dir, "email_processor", "linkedin_monitor", "output")
+            
+            # Convert DD-MM-YY to YYYYMMDD for file matching
+            file_date_str = dt.strftime("%Y%m%d")
+            pattern = os.path.join(output_dir, f"linkedin_ml_posts_{file_date_str}_*_with_emails.json")
+            files = glob.glob(pattern)
+            
+            for fpath in files:
+                try:
+                    with open(fpath, 'r', encoding='utf-8') as f:
+                        file_data = json.load(f)
+                        records.extend(file_data)
+                except Exception as e:
+                    print(f"Error reading {fpath}: {e}")
+        else:
+            response = supabase.table('scraped_posts').select("*").eq("date", date).execute()
+            records = response.data
+
         if not records:
             return {"message": "No scraped posts found for this date", "data": []}
             
+        # Dynamically apply filters before returning to UI
+        import sys
+        base_dir_monitor = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "email_processor", "linkedin_monitor")
+        if base_dir_monitor not in sys.path:
+            sys.path.append(base_dir_monitor)
+        
+        try:
+            from filter_utils import load_config, should_exclude_post
+            config = load_config()
+            
+            filtered_records = []
+            for record in records:
+                text = record.get('text', '')
+                is_excluded, reason = should_exclude_post(text, config)
+                if not is_excluded:
+                    filtered_records.append(record)
+                    
+            records = filtered_records
+        except ImportError as e:
+            print(f"Warning: Could not load filter_utils, returning unfiltered records: {e}")
+
         return {"message": f"Found {len(records)} scraped posts", "data": records}
         
     except ValueError:
