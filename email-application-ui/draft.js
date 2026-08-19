@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const recordCountSpan = document.getElementById('recordCount');
     const viewGridBtn = document.getElementById('viewGridBtn');
     const viewSwipeBtn = document.getElementById('viewSwipeBtn');
+    const modeEmailBtn = document.getElementById('modeEmailBtn');
+    const modeAIBtn = document.getElementById('modeAIBtn');
 
     let currentRecords = [];
     let currentViewMode = 'grid'; // 'grid' or 'swipe'
+    let currentDataMode = false; // false = email, true = ai
     let currentSwipeIndex = 0;
 
     const baseUrl = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' || window.location.protocol === 'file:' 
@@ -42,6 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
         swipeContainer.classList.remove('hidden');
         cardsContainer.classList.add('hidden');
         renderSwipe();
+    });
+
+    modeEmailBtn.addEventListener('click', () => {
+        currentDataMode = false;
+        modeEmailBtn.classList.add('active');
+        modeAIBtn.classList.remove('active');
+    });
+
+    modeAIBtn.addEventListener('click', () => {
+        currentDataMode = true;
+        modeAIBtn.classList.add('active');
+        modeEmailBtn.classList.remove('active');
     });
 
     // Keyboard navigation for Swipe View
@@ -81,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchBtn.disabled = true;
 
         try {
-            const response = await fetch(`${baseUrl}/fetch_scraped_posts?date=${encodeURIComponent(targetDate)}`, {
+            const response = await fetch(`${baseUrl}/fetch_scraped_posts?date=${encodeURIComponent(targetDate)}&is_ai=${currentDataMode}`, {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' }
             });

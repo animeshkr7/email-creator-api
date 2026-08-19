@@ -138,7 +138,7 @@ async def delete_record(record_id: int, table: str = "job_url"):
 
 
 @app.get("/fetch_scraped_posts")
-async def fetch_scraped_posts(date: str):
+async def fetch_scraped_posts(date: str, is_ai: bool = False):
     """
     API 3: Takes a date argument (DD-MM-YY) and fetches scraped LinkedIn posts.
     If DATA=local in .env, it fetches from the local output directory.
@@ -165,11 +165,14 @@ async def fetch_scraped_posts(date: str):
                 try:
                     with open(fpath, 'r', encoding='utf-8') as f:
                         file_data = json.load(f)
-                        records.extend(file_data)
+                        # Filter local data for is_ai if needed, but local data usually doesn't have it.
+                        for r in file_data:
+                            if r.get("is_ai", False) == is_ai:
+                                records.append(r)
                 except Exception as e:
                     print(f"Error reading {fpath}: {e}")
         else:
-            response = supabase.table('scraped_posts').select("*").eq("date", date).execute()
+            response = supabase.table('scraped_posts').select("*").eq("date", date).eq("is_ai", is_ai).execute()
             records = response.data
 
         if not records:
